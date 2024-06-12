@@ -6,7 +6,7 @@ valid_mac_pattern = r'(\w\w:){5}\w\w'
 
 def get_mac_address(interface: str):
     output = subprocess.check_output(["ifconfig", interface])
-    result = re.search(valid_mac_pattern, output)
+    result = re.search(valid_mac_pattern, str(output))
 
     if result:
         return result.group(0)
@@ -18,8 +18,9 @@ def get_mac_address(interface: str):
 def update_mac_address(interface: str, new_mac: str):
     # verify if mac address is valid
     is_valid_mac = re.fullmatch(valid_mac_pattern, new_mac)
+    current_mac = get_mac_address(interface)
 
-    if is_valid_mac:
+    if is_valid_mac and current_mac:
         # Update mac address
         subprocess.call(["ifconfig", interface, "down"])
         subprocess.call(["ifconfig", interface, "hw ether", new_mac])

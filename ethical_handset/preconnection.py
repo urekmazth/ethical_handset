@@ -23,7 +23,7 @@ def update_mac_address(interface: str, new_mac: str):
     if is_valid_mac and current_mac:
         # Update mac address
         subprocess.call(["ifconfig", interface, "down"])
-        subprocess.call(["ifconfig", interface, "hw ether", new_mac])
+        subprocess.call(["ifconfig", interface, "hw", "ether", new_mac])
         subprocess.call(["ifconfig", interface, "up"])
 
         current_mac = get_mac_address(interface)

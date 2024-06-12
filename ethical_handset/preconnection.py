@@ -1,7 +1,15 @@
+from enum import Enum, auto
 import re
 import subprocess
 
+from rich import print as rich_print
+
 valid_mac_pattern = r'(\w\w:){5}\w\w'
+
+
+class InterfaceMode(Enum):
+    STAGED = "STAGED",
+    MONITOR = "MONITOR",
 
 
 def get_mac_address(interface: str):
@@ -11,8 +19,8 @@ def get_mac_address(interface: str):
     if result:
         return result.group(0)
 
-    raise Exception(
-        f"[-] Failed to read MAC address for interface {interface}")
+    raise rich_print(
+        f"[red bold][-] Failed to read MAC address for interface {interface}[/]")
 
 
 def update_mac_address(interface: str, new_mac: str):
@@ -30,3 +38,13 @@ def update_mac_address(interface: str, new_mac: str):
 
         if current_mac == new_mac:
             return True
+
+
+def update_interface_mode(mode: InterfaceMode, interface: str):
+    print(mode, interface)
+
+    subprocess.call(["ifconfig", interface, "down"])
+    subprocess.call(["iwconfig", interface, "mode", mode.name])
+    subprocess.call(["ifconfig", interface, "up"])
+
+    return True
